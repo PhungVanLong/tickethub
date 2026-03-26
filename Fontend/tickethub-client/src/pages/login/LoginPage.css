@@ -1,0 +1,302 @@
+/* ==================== LOGIN PAGE ==================== */
+.login-page {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #eeeef5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Re-use auth-header, auth-footer from RegisterPage.css or define here */
+.login-page .auth-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 40px;
+}
+
+.login-page .logo {
+    font-weight: 700;
+    font-size: 18px;
+    color: #1a56db;
+    letter-spacing: -0.3px;
+}
+
+.login-page .help-btn {
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+}
+
+.login-body {
+    flex: 1;
+    display: flex;
+    padding: 0 40px 32px;
+    gap: 0;
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+    align-items: stretch;
+}
+
+/* LEFT PANEL */
+.login-left {
+    flex: 1.1;
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    min-height: 500px;
+}
+
+.login-left img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.login-left-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 40%, rgba(0, 0, 0, 0.2) 80%);
+}
+
+.login-left-text {
+    position: absolute;
+    bottom: 36px;
+    left: 32px;
+    right: 32px;
+    color: #fff;
+}
+
+.login-left-text h2 {
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0 0 12px;
+}
+
+.login-left-text p {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* RIGHT FORM */
+.login-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+}
+
+.login-form-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 44px 40px;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+    width: 100%;
+    max-width: 420px;
+}
+
+.login-form-card h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e3a8a;
+    margin: 0 0 6px;
+}
+
+.form-subtitle {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 0 28px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    color: #374151;
+}
+
+.password-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.forgot-link {
+    font-size: 12px;
+    color: #2563eb;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+.form-group input {
+    background: #f3f4f8;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 13px 14px;
+    font-size: 14px;
+    color: #111;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.form-group input::placeholder {
+    color: #9ca3af;
+}
+
+.form-group input:focus {
+    border-color: #2563eb;
+    background: #fff;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #374151;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.checkbox-row input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+    cursor: pointer;
+    accent-color: #2563eb;
+    flex-shrink: 0;
+}
+
+.btn-signin {
+    width: 100%;
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    margin-bottom: 20px;
+}
+
+.btn-signin:hover {
+    opacity: 0.9;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    color: #9ca3af;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e5e7eb;
+}
+
+.social-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 11px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.social-btn:hover {
+    background: #f3f4f6;
+}
+
+.google-logo {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    color: #4285f4;
+}
+
+.fb-icon {
+    font-size: 14px;
+}
+
+.register-link {
+    text-align: center;
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+}
+
+.register-link a {
+    color: #1d4ed8;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+/* FOOTER */
+.login-page .auth-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    border-top: 1px solid #e5e7eb;
+    font-size: 11px;
+    color: #9ca3af;
+    letter-spacing: 0.3px;
+}
+
+.login-page .auth-footer .footer-links {
+    display: flex;
+    gap: 24px;
+}
+
+.login-page .auth-footer .footer-links a {
+    color: #9ca3af;
+    text-decoration: none;
+    letter-spacing: 0.3px;
+}
+
+.login-page .auth-footer .footer-links a:hover {
+    color: #374151;
+}
