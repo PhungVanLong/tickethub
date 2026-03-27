@@ -1,0 +1,33 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:16
+    container_name: identity-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME:-identity-service}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-270504}
+    ports:
+      - "5432:5432"
+    volumes:
+      - identity_pg_data:/var/lib/postgresql/data
+
+  identity-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: identity-service
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-identity-service}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-270504}
+      JWT_SECRET: ${JWT_SECRET:-replace-with-at-least-32-characters-secret}
+    ports:
+      - "8080:8080"
+
+volumes:
+  identity_pg_data:
