@@ -1,0 +1,123 @@
+openapi: 3.0.3
+info:
+  title: IdentityService API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+paths:
+  /auth/register:
+    post:
+      summary: Dang ky tai khoan moi
+      responses:
+        "200":
+          description: Success
+  /auth/login:
+    post:
+      summary: Dang nhap, tra ve JWT token
+      responses:
+        "200":
+          description: Success
+  /auth/refresh:
+    post:
+      summary: Refresh token
+      responses:
+        "200":
+          description: Success
+  /auth/logout:
+    post:
+      summary: Dang xuat
+      responses:
+        "204":
+          description: No Content
+  /users/me:
+    get:
+      summary: Lay thong tin nguoi dung hien tai
+      responses:
+        "200":
+          description: Success
+    put:
+      summary: Cap nhat thong tin ca nhan
+      responses:
+        "200":
+          description: Success
+  /users/{id}:
+    get:
+      summary: Chi tiet user (chi admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+  /vouchers:
+    post:
+      summary: Tao voucher
+      responses:
+        "200":
+          description: Success
+  /vouchers/{code}:
+    get:
+      summary: Kiem tra voucher
+      parameters:
+        - in: path
+          name: code
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+  /vouchers/{id}/use:
+    post:
+      summary: Ghi nhan voucher usage
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Success
+  /system/logs:
+    get:
+      summary: Xem logs hanh dong
+      responses:
+        "200":
+          description: Success
+  /captcha/logs:
+    get:
+      summary: Xem logs captcha
+      responses:
+        "200":
+          description: Success
+  /platform/config:
+    get:
+      summary: Lay cau hinh he thong
+      responses:
+        "200":
+          description: Success
+  /platform/config/{key}:
+    put:
+      summary: Cap nhat cau hinh he thong
+      parameters:
+        - in: path
+          name: key
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
