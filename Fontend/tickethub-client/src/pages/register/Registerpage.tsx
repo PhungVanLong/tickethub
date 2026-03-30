@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './RegisterPage.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 const RegisterPage: React.FC = () => {
     const [form, setForm] = useState({
@@ -11,14 +12,33 @@ const RegisterPage: React.FC = () => {
         agreed: false,
     });
 
+    const { register, isLoading } = useAuth();
+    const navigate = useNavigate();
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = e.target;
         setForm((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
     };
 
-    const handleSubmit = (e: React.MouseEvent) => {
+    const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
-        console.log('Register:', form);
+        if (form.password !== form.confirmPassword) {
+            alert("Passwords do not match");
+            return;
+        }
+
+        const result = await register({
+            email: form.email,
+            password: form.password,
+            fullName: form.fullName.trim() || '',
+        });
+
+        if (result.success) {
+            alert("Registration successful! Please sign in.");
+            navigate('/login');
+        } else {
+            alert(result.error || 'Registration failed. Please try again.');
+        }
     };
 
     return (
@@ -132,8 +152,8 @@ const RegisterPage: React.FC = () => {
                             </span>
                         </label>
 
-                        <button className="btn-create" onClick={handleSubmit}>
-                            Create Account
+                        <button className="btn-create" onClick={handleSubmit} disabled={isLoading}>
+                            {isLoading ? 'Creating Account...' : 'Create Account'}
                         </button>
 
                         <div className="divider">

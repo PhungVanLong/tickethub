@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './LoginPage.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 const LoginPage: React.FC = () => {
     const [form, setForm] = useState({
@@ -9,14 +10,23 @@ const LoginPage: React.FC = () => {
         keepSignedIn: false,
     });
 
+    const { login, isLoading } = useAuth();
+    const navigate = useNavigate();
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = e.target;
         setForm((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
     };
 
-    const handleSubmit = (e: React.MouseEvent) => {
+    const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
-        console.log('Login:', form);
+        const result = await login({ email: form.email, password: form.password });
+        
+        if (result.success) {
+            navigate('/');
+        } else {
+            alert(result.error || 'Login failed. Please check your credentials.');
+        }
     };
 
     return (
@@ -87,8 +97,8 @@ const LoginPage: React.FC = () => {
                             <span>Keep me signed in for 30 days</span>
                         </label>
 
-                        <button className="btn-signin" onClick={handleSubmit}>
-                            Sign In
+                        <button className="btn-signin" onClick={handleSubmit} disabled={isLoading}>
+                            {isLoading ? 'Signing In...' : 'Sign In'}
                         </button>
 
                         <div className="divider">
