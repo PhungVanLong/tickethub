@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './HomePage.css';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 const categories = [
     { icon: '🎵', label: 'CONCERTS', color: '#e8eaf6' },
@@ -47,7 +48,8 @@ const events = [
 ];
 
 const HomePage: React.FC = () => {
-    const [activeNav, setActiveNav] = useState('Explore');
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const { user, isAuthenticated, logout } = useAuth();
 
     return (
         <div className="home-page">
@@ -55,29 +57,61 @@ const HomePage: React.FC = () => {
             <nav className="navbar">
                 <div className="navbar-left">
                     <span className="logo">TicketHub</span>
-                    <div className="nav-links">
-                        {['Explore', 'Venues', 'Categories'].map((item) => (
-                            <button
-                                key={item}
-                                className={`nav-link ${activeNav === item ? 'active' : ''}`}
-                                onClick={() => setActiveNav(item)}
-                            >
-                                {item}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-                <div className="navbar-center">
                     <div className="search-bar">
                         <span className="search-icon">🔍</span>
-                        <input type="text" placeholder="Search events, artists..." />
+                        <input type="text" placeholder="Tìm kiếm cộng đồng, sự kiện..." />
                     </div>
                 </div>
-                <div className="navbar-right">
-                    <button className="icon-btn">🔔</button>
-                    <button className="icon-btn">👤</button>
-                    <button className="btn-organizer">Become an Organizer</button>
-                    <Link to="/login"><button className="btn-signin">Sign In</button></Link>
+                
+                <div className="navbar-right-auth">
+                    <Link to="/events" className="nav-link-text">Sự kiện</Link>
+                    {isAuthenticated && user && (
+                        <Link to="/dashboard" className="nav-link-text">Dashboard</Link>
+                    )}
+                    
+                    <div className="nav-divider"></div>
+                    
+                    {isAuthenticated && user ? (
+                        <div className="user-menu" 
+                             onMouseEnter={() => setDropdownOpen(true)}
+                             onMouseLeave={() => setDropdownOpen(false)}>
+                            <div className="user-avatar">
+                                {user.fullName ? user.fullName.charAt(0).toUpperCase() : 'C'}
+                            </div>
+                            <div className="user-info-banner">
+                                <div className="user-name">{user.fullName || 'CUSTOMER User'}</div>
+                                <div className="user-role">{user.role || 'CUSTOMER'}</div>
+                            </div>
+                            
+                            {dropdownOpen && (
+                                <div className="dropdown-menu">
+                                    <div className="dropdown-header">
+                                        <div className="dropdown-label">TÀI KHOẢN</div>
+                                        <div className="dropdown-email">{user.email}</div>
+                                    </div>
+                                    <div className="dropdown-divider-line"></div>
+                                    <Link to="/create-event" className="dropdown-item highlight">
+                                        <span className="dropdown-icon">+</span> Tạo sự kiện mới
+                                    </Link>
+                                    <Link to="/profile" className="dropdown-item">
+                                        <span className="dropdown-icon">👤</span> Thông tin cá nhân
+                                    </Link>
+                                    <Link to="/tickets" className="dropdown-item">
+                                        <span className="dropdown-icon">🎟️</span> Vé của tôi
+                                    </Link>
+                                    <div className="dropdown-divider-line"></div>
+                                    <div className="dropdown-item text-danger" onClick={logout}>
+                                        <span className="dropdown-icon danger-icon">↪</span> Đăng xuất
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <>
+                            <Link to="/login" className="nav-text-link">Đăng nhập</Link>
+                            <Link to="/register"><button className="btn-signin">Đăng ký</button></Link>
+                        </>
+                    )}
                 </div>
             </nav>
 
