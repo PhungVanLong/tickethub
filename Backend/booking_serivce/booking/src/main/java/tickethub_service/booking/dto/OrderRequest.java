@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -21,7 +22,7 @@ public class OrderRequest {
     private String orderCode;
     
     @NotNull(message = "User ID is required")
-    private Long userId;
+    private UUID userId;
     
     @NotNull(message = "Order items are required")
     private List<OrderItemRequest> orderItems;
@@ -35,7 +36,7 @@ public class OrderRequest {
     public static class OrderItemRequest {
         
         @NotNull(message = "Ticket tier ID is required")
-        private Long ticketTierId;
+        private UUID ticketTierId;
         
         @NotNull(message = "Quantity is required")
         @Positive(message = "Quantity must be positive")

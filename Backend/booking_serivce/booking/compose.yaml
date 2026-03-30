@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  # Local development dependencies
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: booking-postgres-dev
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 270504
+      POSTGRES_DB: booking-service
+    ports:
+      - "5436:5432"
+    volumes:
+      - booking_postgres_data:/var/lib/postgresql/data
+    networks:
+      - booking-network
+
+  redis-dev:
+    image: redis:7-alpine
+    container_name: booking-redis-dev
+    ports:
+      - "6382:6379"
+    volumes:
+      - booking_redis_data:/data
+    networks:
+      - booking-network
+
+  zookeeper-dev:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: booking-zookeeper-dev
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - booking-network
+
+  kafka-dev:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: booking-kafka-dev
+    depends_on:
+      - zookeeper-dev
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-dev:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-dev:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    ports:
+      - "9093:9092"
+    networks:
+      - booking-network
+
+  # Booking Service
+  booking-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: booking-service-dev
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: postgres-dev
+      DB_PORT: 5432
+      DB_NAME: booking-service
+      DB_USER: postgres
+      DB_PASSWORD: 270504
+      REDIS_HOST: redis-dev
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka-dev:9092
+    ports:
+      - "8083:8083"
+    depends_on:
+      - postgres-dev
+      - redis-dev
+      - kafka-dev
+    networks:
+      - booking-network
+      - tickethub-network
+    volumes:
+      - ./src/main/resources:/app/resources
+      - ./logs:/app/logs
+    restart: unless-stopped
+
+volumes:
+  booking_postgres_data:
+  booking_redis_data:
+
+networks:
+  booking-network:
+    driver: bridge
+  tickethub-network:
+    external: true
+    driver: bridge

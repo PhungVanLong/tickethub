@@ -7,13 +7,14 @@ import tickethub_service.booking.entity.enums.PaymentStatus;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface PaymentRepository extends JpaRepository<Payment, Long> {
+public interface PaymentRepository extends JpaRepository<Payment, UUID> {
     
     Optional<Payment> findByPaymentCode(String paymentCode);
     
-    List<Payment> findByOrderId(Long orderId);
+    List<Payment> findByOrderId(UUID orderId);
     
     List<Payment> findByPaymentStatus(PaymentStatus status);
 }

@@ -11,6 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "ticket_tiers_ref")
@@ -21,11 +22,11 @@ import java.util.List;
 public class TicketTier {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     
     @Column(name = "event_id", nullable = false)
-    private Long eventId;
+    private UUID eventId;
     
     @Column(name = "tier_name", nullable = false, length = 100)
     private String tierName;

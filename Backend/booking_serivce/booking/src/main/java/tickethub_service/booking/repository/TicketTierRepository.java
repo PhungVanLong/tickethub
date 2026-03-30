@@ -7,16 +7,17 @@ import org.springframework.stereotype.Repository;
 import tickethub_service.booking.entity.TicketTier;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface TicketTierRepository extends JpaRepository<TicketTier, Long> {
+public interface TicketTierRepository extends JpaRepository<TicketTier, UUID> {
     
-    List<TicketTier> findByEventId(Long eventId);
+    List<TicketTier> findByEventId(UUID eventId);
     
-    List<TicketTier> findByEventIdAndIsActive(Long eventId, Boolean isActive);
+    List<TicketTier> findByEventIdAndIsActive(UUID eventId, Boolean isActive);
     
     @Query("SELECT tt FROM TicketTier tt WHERE tt.eventId = :eventId AND tt.isActive = true AND tt.availableQuantity > tt.soldQuantity")
-    List<TicketTier> findAvailableTicketTiers(@Param("eventId") Long eventId);
+    List<TicketTier> findAvailableTicketTiers(@Param("eventId") UUID eventId);
     
     List<TicketTier> findByIsActive(Boolean isActive);
 }

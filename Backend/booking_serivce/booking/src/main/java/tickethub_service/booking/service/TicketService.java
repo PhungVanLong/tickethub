@@ -46,7 +46,7 @@ public class TicketService {
         return ticket;
     }
     
-    public List<Ticket> getTicketsByUserId(Long userId) {
+    public List<Ticket> getTicketsByUserId(UUID userId) {
         log.info("Getting tickets for user ID: {}", userId);
         return ticketRepository.findByUserId(userId);
     }

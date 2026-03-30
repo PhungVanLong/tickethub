@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -15,9 +16,9 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderResponse {
     
-    private Long id;
+    private UUID id;
     private String orderCode;
-    private Long userId;
+    private UUID userId;
     private String orderStatus;
     private BigDecimal totalAmount;
     private BigDecimal discountAmount;
@@ -33,8 +34,8 @@ public class OrderResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class OrderItemResponse {
-        private Long id;
-        private Long ticketTierId;
+        private UUID id;
+        private UUID ticketTierId;
         private String tierName;
         private Integer quantity;
         private BigDecimal unitPrice;
@@ -48,7 +49,7 @@ public class OrderResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PaymentResponse {
-        private Long id;
+        private UUID id;
         private String paymentCode;
         private String paymentMethod;
         private BigDecimal amount;
@@ -61,7 +62,7 @@ public class OrderResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class TicketResponse {
-        private Long id;
+        private UUID id;
         private String ticketCode;
         private String ticketStatus;
         private String seatNumber;

@@ -21,7 +21,7 @@ public class PaymentService {
     
     private final PaymentRepository paymentRepository;
     
-    public Payment createPayment(Long orderId, String paymentMethod, BigDecimal amount) {
+    public Payment createPayment(UUID orderId, String paymentMethod, BigDecimal amount) {
         log.info("Creating payment for order ID: {}, amount: {}", orderId, amount);
         
         Payment payment = Payment.builder()
@@ -37,7 +37,7 @@ public class PaymentService {
         return payment;
     }
     
-    public Payment updatePaymentStatus(Long paymentId, PaymentStatus status) {
+    public Payment updatePaymentStatus(UUID paymentId, PaymentStatus status) {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
         
@@ -51,7 +51,7 @@ public class PaymentService {
         return payment;
     }
     
-    public Payment getPaymentById(Long id) {
+    public Payment getPaymentById(UUID id) {
         return paymentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
     }

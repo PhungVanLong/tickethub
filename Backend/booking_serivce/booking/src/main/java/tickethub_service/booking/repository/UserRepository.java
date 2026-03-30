@@ -5,15 +5,12 @@ import org.springframework.stereotype.Repository;
 import tickethub_service.booking.entity.User;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    
-    Optional<User> findByUsername(String username);
+public interface UserRepository extends JpaRepository<User, UUID> {
     
     Optional<User> findByEmail(String email);
-    
-    boolean existsByUsername(String username);
     
     boolean existsByEmail(String email);
 }

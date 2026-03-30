@@ -9,6 +9,7 @@ import tickethub_service.booking.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -19,11 +20,7 @@ public class UserService {
     private final UserRepository userRepository;
     
     public User createUser(User user) {
-        log.info("Creating user with username: {}", user.getUsername());
-        
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new RuntimeException("Username already exists");
-        }
+        log.info("Creating user with email: {}", user.getEmail());
         
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("Email already exists");
@@ -37,13 +34,8 @@ public class UserService {
         return savedUser;
     }
     
-    public User getUserById(Long id) {
+    public User getUserById(UUID id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-    }
-    
-    public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
     
@@ -52,15 +44,14 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
     
-    public User updateUser(Long id, User userDetails) {
+    public User updateUser(UUID id, User userDetails) {
         log.info("Updating user with ID: {}", id);
         
         User user = getUserById(id);
         
         user.setFullName(userDetails.getFullName());
         user.setPhone(userDetails.getPhone());
-        user.setAddress(userDetails.getAddress());
-        user.setAvatar(userDetails.getAvatar());
+        user.setAvatarUrl(userDetails.getAvatarUrl());
         user.setUpdatedAt(LocalDateTime.now());
         
         User updatedUser = userRepository.save(user);
@@ -68,7 +59,7 @@ public class UserService {
         return updatedUser;
     }
     
-    public void deleteUser(Long id) {
+    public void deleteUser(UUID id) {
         log.info("Deleting user with ID: {}", id);
         
         User user = getUserById(id);
@@ -81,7 +72,7 @@ public class UserService {
         return userRepository.findAll();
     }
     
-    public User verifyUser(Long id) {
+    public User verifyUser(UUID id) {
         log.info("Verifying user with ID: {}", id);
         
         User user = getUserById(id);
@@ -93,7 +84,7 @@ public class UserService {
         return verifiedUser;
     }
     
-    public User deactivateUser(Long id) {
+    public User deactivateUser(UUID id) {
         log.info("Deactivating user with ID: {}", id);
         
         User user = getUserById(id);
@@ -105,7 +96,7 @@ public class UserService {
         return deactivatedUser;
     }
     
-    public User activateUser(Long id) {
+    public User activateUser(UUID id) {
         log.info("Activating user with ID: {}", id);
         
         User user = getUserById(id);

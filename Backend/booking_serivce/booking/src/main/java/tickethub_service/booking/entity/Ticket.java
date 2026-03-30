@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import tickethub_service.booking.entity.enums.TicketStatus;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "tickets")
@@ -20,8 +21,8 @@ import java.time.LocalDateTime;
 public class Ticket {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_item_id", nullable = false)

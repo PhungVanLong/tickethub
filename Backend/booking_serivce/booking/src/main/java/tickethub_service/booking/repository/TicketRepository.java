@@ -9,19 +9,20 @@ import tickethub_service.booking.entity.enums.TicketStatus;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface TicketRepository extends JpaRepository<Ticket, Long> {
+public interface TicketRepository extends JpaRepository<Ticket, UUID> {
     
     Optional<Ticket> findByTicketCode(String ticketCode);
     
     List<Ticket> findByTicketStatus(TicketStatus status);
     
     @Query("SELECT t FROM Ticket t WHERE t.orderItem.order.id = :orderId")
-    List<Ticket> findByOrderId(@Param("orderId") Long orderId);
+    List<Ticket> findByOrderId(@Param("orderId") UUID orderId);
     
     @Query("SELECT t FROM Ticket t WHERE t.orderItem.order.user.id = :userId")
-    List<Ticket> findByUserId(@Param("userId") Long userId);
+    List<Ticket> findByUserId(@Param("userId") UUID userId);
     
-    List<Ticket> findByOrderItemOrderUserId(Long userId);
+    List<Ticket> findByOrderItemOrderUserId(UUID userId);
 }

@@ -14,6 +14,7 @@ import tickethub_service.booking.repository.TicketTierRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +26,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final TicketTierRepository ticketTierRepository;
+    private final KafkaService kafkaService;
     
     public OrderResponse createOrder(OrderRequest request) {
         log.info("Creating order with code: {}", request.getOrderCode());
@@ -59,24 +61,27 @@ public class OrderService {
         
         order = orderRepository.save(savedOrder);
         
+        // Send order created event
+        kafkaService.sendOrderEvent("order.created", convertToResponse(savedOrder));
+        
         log.info("Order created successfully with ID: {}", order.getId());
         return convertToResponse(order);
     }
     
-    public OrderResponse getOrderById(Long id) {
+    public OrderResponse getOrderById(UUID id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
         return convertToResponse(order);
     }
     
-    public List<OrderResponse> getOrdersByUserId(Long userId) {
+    public List<OrderResponse> getOrdersByUserId(UUID userId) {
         List<Order> orders = orderRepository.findByUserId(userId);
         return orders.stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
     
-    public OrderResponse updateOrderStatus(Long orderId, OrderStatus status) {
+    public OrderResponse updateOrderStatus(UUID orderId, OrderStatus status) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
         

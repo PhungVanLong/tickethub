@@ -13,6 +13,7 @@ import tickethub_service.booking.service.OrderService;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -31,14 +32,14 @@ public class OrderController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<OrderResponse> getOrder(@PathVariable Long id) {
+    public ResponseEntity<OrderResponse> getOrder(@PathVariable UUID id) {
         log.info("Getting order with ID: {}", id);
         OrderResponse response = orderService.getOrderById(id);
         return ResponseEntity.ok(response);
     }
     
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<OrderResponse>> getOrdersByUser(@PathVariable Long userId) {
+    public ResponseEntity<List<OrderResponse>> getOrdersByUser(@PathVariable UUID userId) {
         log.info("Getting orders for user ID: {}", userId);
         List<OrderResponse> responses = orderService.getOrdersByUserId(userId);
         return ResponseEntity.ok(responses);
@@ -46,7 +47,7 @@ public class OrderController {
     
     @PutMapping("/{id}/status")
     public ResponseEntity<OrderResponse> updateOrderStatus(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestParam OrderStatus status) {
         log.info("Updating order status to {} for order ID: {}", status, id);
         OrderResponse response = orderService.updateOrderStatus(id, status);

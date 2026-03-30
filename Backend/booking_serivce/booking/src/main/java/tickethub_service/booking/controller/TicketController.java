@@ -10,6 +10,7 @@ import tickethub_service.booking.entity.enums.TicketStatus;
 import tickethub_service.booking.service.TicketService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/tickets")
@@ -35,7 +36,7 @@ public class TicketController {
     }
     
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Ticket>> getTicketsByUser(@PathVariable Long userId) {
+    public ResponseEntity<List<Ticket>> getTicketsByUser(@PathVariable UUID userId) {
         log.info("Getting tickets for user ID: {}", userId);
         List<Ticket> tickets = ticketService.getTicketsByUserId(userId);
         return ResponseEntity.ok(tickets);
