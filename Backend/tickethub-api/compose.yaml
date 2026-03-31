@@ -1,13 +1,61 @@
+version: '3.8'
+
 services:
-  postgres:
-    image: 'postgres:latest'
+  # API Gateway Service
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-gateway-dev
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      SPRING_PROFILES_ACTIVE: dev
+      # Service routing URLs
+      IDENTITY_SERVICE_URL: http://identity-service-dev:8081
+      MANAGEMENT_SERVICE_URL: http://management-service-dev:8082
+      BOOKING_SERVICE_URL: http://booking-service-dev:8083
+      # JWT Configuration
+      JWT_SECRET: ${JWT_SECRET:-replace-with-at-least-32-characters-secret}
+      # Redis for session management
+      REDIS_HOST: redis-dev
+      REDIS_PORT: 6379
     ports:
-      - '5432'
-  redis:
-    image: 'redis:latest'
+      - "8080:8080"
+    depends_on:
+      redis-dev:
+        condition: service_healthy
+    networks:
+      - tickethub-network
+    volumes:
+      - ./src/main/resources:/app/resources
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Redis for API Gateway
+  redis-dev:
+    image: redis:7-alpine
+    container_name: api-gateway-redis
     ports:
-      - '6379'
+      - "6379:6379"
+    volumes:
+      - api_gateway_redis_data:/data
+    networks:
+      - tickethub-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  api_gateway_redis_data:
+
+networks:
+  tickethub-network:
+    external: true
+    driver: bridge

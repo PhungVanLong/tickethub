@@ -1,0 +1,89 @@
+spring:
+  application:
+    name: tickethub-api
+  
+  profiles:
+    active: dev
+  
+  # Set web application type to reactive for Gateway
+  main:
+    web-application-type: reactive
+  
+  # Disable compatibility verifier for Spring Cloud
+  cloud:
+    compatibility-verifier:
+      enabled: false
+    # Gateway Configuration
+    gateway:
+      # Service Routes
+      routes:
+        # Identity Service Routes
+        - id: identity-service-auth
+          uri: ${IDENTITY_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/auth/**,/api/users/**,/api/vouchers/**,/api/platform-config/**,/api/logs/**
+          filters:
+            - StripPrefix=1
+        
+        # Management Service Routes  
+        - id: management-service-events
+          uri: ${MANAGEMENT_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/events/**,/api/analytics/**,/api/approvals/**,/api/seats/**,/api/tickets/**
+          filters:
+            - StripPrefix=1
+            
+        # Booking Service Routes
+        - id: booking-service-orders
+          uri: ${BOOKING_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/orders/**,/api/payments/**,/api/promotions/**
+          filters:
+            - StripPrefix=1
+      
+      # CORS Configuration
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:3000"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+
+---
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+  
+  # Redis Configuration
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+# Gateway Logging
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web.reactive: DEBUG
+    reactor.netty: DEBUG
+
+# Health Check
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+      base-path: /actuator   # đảm bảo path đúng
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
