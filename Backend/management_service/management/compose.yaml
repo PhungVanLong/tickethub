@@ -15,6 +15,11 @@ services:
       - management_postgres_data:/var/lib/postgresql/data
     networks:
       - management-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Management Service Redis
   redis-dev:
@@ -26,6 +31,11 @@ services:
       - management_redis_data:/data
     networks:
       - management-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Management Service
   management-service:
@@ -45,14 +55,20 @@ services:
     ports:
       - "8082:8082"
     depends_on:
-      - postgres-dev
-      - redis-dev
+      postgres-dev:
+        condition: service_healthy
+      redis-dev:
+        condition: service_healthy
     networks:
       - management-network
       - tickethub-network
-    volumes:
-      - ./src/main/resources:/app/config  # Spring Boot tự đọc /app/config/
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
 volumes:
   management_postgres_data:
