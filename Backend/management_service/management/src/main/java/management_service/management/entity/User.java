@@ -1,5 +1,6 @@
 package management_service.management.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,6 +37,7 @@ public class User {
     private LocalDateTime syncedAt;
     
     @OneToMany(mappedBy = "organizer")
+    @JsonIgnore
     private List<Event> events;
     
     @OneToMany(mappedBy = "admin")

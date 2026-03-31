@@ -30,8 +30,6 @@ spring:
           uri: ${MANAGEMENT_SERVICE_URL:http://localhost:8082}
           predicates:
             - Path=/api/events/**,/api/analytics/**,/api/approvals/**,/api/seats/**,/api/tickets/**
-          filters:
-            - StripPrefix=1
             
         # Booking Service Routes
         - id: booking-service-orders
