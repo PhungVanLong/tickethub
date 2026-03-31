@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/tickets")
+@RequestMapping("/tickets")
 @RequiredArgsConstructor
 @Slf4j
 @Validated

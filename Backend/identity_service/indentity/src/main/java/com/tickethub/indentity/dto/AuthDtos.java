@@ -13,8 +13,8 @@ public class AuthDtos {
             String phone,
             String avatarUrl,
             String captchaToken,
-            boolean captchaPassed,
-            float captchaScore
+            Boolean captchaPassed,
+            Float captchaScore
     ) {
     }
 
@@ -22,8 +22,8 @@ public class AuthDtos {
             @Email @NotBlank String email,
             @NotBlank String password,
             String captchaToken,
-            boolean captchaPassed,
-            float captchaScore
+            Boolean captchaPassed,
+            Float captchaScore
     ) {
     }
 

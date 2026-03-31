@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # Management Service Database
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: management-postgres-dev
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 270504
+      POSTGRES_DB: management-service
+    ports:
+      - "5435:5432"
+    volumes:
+      - management_postgres_data:/var/lib/postgresql/data
+    networks:
+      - management-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Management Service Redis
+  redis-dev:
+    image: redis:7-alpine
+    container_name: management-redis-dev
+    ports:
+      - "6381:6379"
+    volumes:
+      - management_redis_data:/data
+    networks:
+      - management-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Management Service
+  management-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: management-service-dev
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: postgres-dev
+      DB_PORT: 5432
+      DB_NAME: management-service
+      DB_USER: postgres
+      DB_PASSWORD: 270504
+      REDIS_HOST: redis-dev
+      REDIS_PORT: 6379
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
+      redis-dev:
+        condition: service_healthy
+    networks:
+      - management-network
+      - tickethub-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+volumes:
+  management_postgres_data:
+  management_redis_data:
+
+networks:
+  management-network:
+    driver: bridge
+  tickethub-network:
+    external: true

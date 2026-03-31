@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/events")
+@RequestMapping("/events")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class EventController {

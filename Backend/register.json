@@ -1,0 +1,10 @@
+﻿{
+    "fullName": "Gateway User",
+    "avatarUrl": "",
+    "captchaScore": 1.0,
+    "password": "password123",
+    "captchaToken": "",
+    "phone": "0123456789",
+    "captchaPassed": true,
+    "email": "gatewayuser@test.com"
+}
