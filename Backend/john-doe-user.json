@@ -1,0 +1,8 @@
+{
+    "id": "550e8400-e29b-41d4-a716-446655440004",
+    "fullName": "John Doe",
+    "email": "john.doe@test.com",
+    "role": "CUSTOMER",
+    "isActive": true,
+    "isVerified": false
+}

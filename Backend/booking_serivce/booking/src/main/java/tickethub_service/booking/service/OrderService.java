@@ -13,6 +13,7 @@ import tickethub_service.booking.repository.UserRepository;
 import tickethub_service.booking.repository.TicketTierRepository;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -55,17 +56,22 @@ public class OrderService {
                 .map(OrderItem::getFinalPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         
-        savedOrder.setOrderItems(orderItems);
+        // Use getter of managed entity to ensure proper cascade
+        savedOrder.getOrderItems().clear();
+        savedOrder.getOrderItems().addAll(orderItems);
         savedOrder.setTotalAmount(totalAmount);
         savedOrder.setFinalAmount(totalAmount);
         
         order = orderRepository.save(savedOrder);
         
-        // Send order created event
-        kafkaService.sendOrderEvent("order.created", convertToResponse(savedOrder));
+        // Create response BEFORE sending Kafka to avoid LazyInitializationException
+        OrderResponse response = convertToResponse(order);
+        
+        // Send order created event AFTER response is created
+        kafkaService.sendOrderEvent("order.created", response);
         
         log.info("Order created successfully with ID: {}", order.getId());
-        return convertToResponse(order);
+        return response;
     }
     
     public OrderResponse getOrderById(UUID id) {
@@ -103,7 +109,42 @@ public class OrderService {
         TicketTier ticketTier = ticketTierRepository.findById(request.getTicketTierId())
                 .orElseThrow(() -> new RuntimeException("Ticket tier not found"));
         
+        // Inventory validation
+        int availableQuantity = ticketTier.getAvailableQuantity() - ticketTier.getSoldQuantity();
+        if (availableQuantity < request.getQuantity()) {
+            throw new RuntimeException(String.format(
+                "Insufficient tickets available. Requested: %d, Available: %d for tier: %s",
+                request.getQuantity(), availableQuantity, ticketTier.getTierName()
+            ));
+        }
+        
+        // Check max per user limit
+        if (ticketTier.getMaxPerUser() != null && request.getQuantity() > ticketTier.getMaxPerUser()) {
+            throw new RuntimeException(String.format(
+                "Exceeded maximum tickets per user. Requested: %d, Max allowed: %d for tier: %s",
+                request.getQuantity(), ticketTier.getMaxPerUser(), ticketTier.getTierName()
+            ));
+        }
+        
+        // Check if ticket tier is active and within sale period
+        if (!ticketTier.getIsActive()) {
+            throw new RuntimeException(String.format("Ticket tier %s is not active", ticketTier.getTierName()));
+        }
+        
+        LocalDateTime now = LocalDateTime.now();
+        if (ticketTier.getSaleStartDate() != null && now.isBefore(ticketTier.getSaleStartDate())) {
+            throw new RuntimeException(String.format("Ticket tier %s is not yet on sale", ticketTier.getTierName()));
+        }
+        
+        if (ticketTier.getSaleEndDate() != null && now.isAfter(ticketTier.getSaleEndDate())) {
+            throw new RuntimeException(String.format("Ticket tier %s sale has ended", ticketTier.getTierName()));
+        }
+        
         BigDecimal finalPrice = request.getUnitPrice().multiply(BigDecimal.valueOf(request.getQuantity()));
+        
+        // Update sold quantity
+        ticketTier.setSoldQuantity(ticketTier.getSoldQuantity() + request.getQuantity());
+        ticketTierRepository.save(ticketTier);
         
         return OrderItem.builder()
                 .order(order)
@@ -132,6 +173,7 @@ public class OrderService {
     }
     
     private List<OrderResponse.OrderItemResponse> convertOrderItems(List<OrderItem> orderItems) {
+        if (orderItems == null) return List.of();
         return orderItems.stream()
                 .map(item -> OrderResponse.OrderItemResponse.builder()
                         .id(item.getId())
@@ -147,6 +189,7 @@ public class OrderService {
     }
     
     private List<OrderResponse.PaymentResponse> convertPayments(List<Payment> payments) {
+        if (payments == null) return List.of();
         return payments.stream()
                 .map(payment -> OrderResponse.PaymentResponse.builder()
                         .id(payment.getId())
@@ -160,6 +203,7 @@ public class OrderService {
     }
     
     private List<OrderResponse.TicketResponse> convertTickets(List<Ticket> tickets) {
+        if (tickets == null) return List.of();
         return tickets.stream()
                 .map(ticket -> OrderResponse.TicketResponse.builder()
                         .id(ticket.getId())

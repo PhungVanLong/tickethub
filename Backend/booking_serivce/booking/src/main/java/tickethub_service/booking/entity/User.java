@@ -46,6 +46,9 @@ public class User {
     @Column(name = "synced_at")
     private LocalDateTime syncedAt;
     
+    @Column(length = 50)
+    private String role; // Sync from Identity Service
+    
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

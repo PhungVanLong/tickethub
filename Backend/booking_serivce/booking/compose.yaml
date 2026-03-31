@@ -62,6 +62,12 @@ services:
       - "9093:9092"
     networks:
       - booking-network
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
   # Booking Service
   booking-service:
@@ -87,7 +93,7 @@ services:
       redis-dev:
         condition: service_healthy
       kafka-dev:
-        condition: service_started
+        condition: service_healthy
     networks:
       - booking-network
       - tickethub-network
