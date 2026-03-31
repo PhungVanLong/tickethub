@@ -17,14 +17,17 @@ services:
       - "5433:5433"
     volumes:
       - identity_pg_data:/var/lib/postgresql/data
+    networks:
+      - identity-network
 
   identity-service:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: identity-service
+    container_name: identity-service-dev
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       DB_HOST: ${DB_HOST:-postgres}
       DB_PORT: ${DB_PORT:-5433}
@@ -33,7 +36,19 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-270504}
       JWT_SECRET: ${JWT_SECRET:-replace-with-at-least-32-characters-secret}
     ports:
-      - "8080:8080"
+      - "8081:8080"
+    networks:
+      - identity-network
+      - tickethub-network
+    volumes:
+      - ./src/main/resources:/app/config  # Spring Boot tự đọc /app/config/
+    restart: unless-stopped
 
 volumes:
   identity_pg_data:
+
+networks:
+  identity-network:
+    driver: bridge
+  tickethub-network:
+    external: true
